@@ -6,11 +6,14 @@
  * May not be used, modified, or copied without permission.
  */
 
+//CPU 클럭 관련 도구, 시간 측정용(퍼포먼스 측정)
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/times.h>
 #include "clock.h"
+
 
 
 /******************************************************* 
