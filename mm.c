@@ -178,6 +178,7 @@ static void *extend_heap(size_t words)
 void *heap_listp;
 
 int mm_init(void)
+//
 {
     //책에 있음
     if((heap_listp = mem_sbrk(4*WSIZE)) == (void *)-1) 
@@ -204,13 +205,24 @@ int mm_init(void)
     힙 내부를 갈아엎어서 초기화 해줄 때 쓰인다.
     테스트 하기 전에 힙 깔끔하게
     */
-
+    
     if (extend_heap(CHUNKSIZE/WSIZE) == NULL)
-       return -1;
+    //첫 가용 사이즈 블록을 만들어 주기 위해 하는거임
+      //if(extend_heap(2) == NULL)
+      return -1;
+    
+    if(extend_heap(4) == NULL)
+      return -1;
+
+    /*미리 작은 블록을 만들어줌
+
+    모든 가용리스트
+    */
     return 0;
 }
 
-
+//전역 변수로 rover 포인터 선언해주기 
+static void *rover;
 
 static void *find_fit(size_t asize){
   //first-fit으로 찾기
@@ -229,6 +241,11 @@ static void *find_fit(size_t asize){
 static void place(void *bp, size_t asize){
   size_t csize = GET_SIZE(HDRP(bp));
   //할당할 블록 전체 크기를 읽어온다.
+  /*이미 최적화된 place임 
+  남는 공간이 16바이트 이상이면 split해주고 
+  남는 공간이 애매하면 그냥 다 할당하기 
+  
+  */
 
   if((csize - asize) >= (2*DSIZE)){
     PUT(HDRP(bp), PACK(asize,1)); //헤더 주소 변경해주기
@@ -274,6 +291,8 @@ void *mm_malloc(size_t size)
        asize = DSIZE * ((size +(DSIZE) + (DSIZE-1))/ DSIZE);
 
     if ((bp = find_fit(asize)) != NULL){
+
+        bp = coalesce(bp); //예외 free 블록 짜투리 블록
         place(bp,asize);
         return bp;
         //나중에 이부분에서 next_fit , best_fit으로 고쳐보기
