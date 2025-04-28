@@ -79,7 +79,7 @@ unsigned int * 형 포인터로 타입 변환 후  *로 메모리 공간에 접�
 #include <stdlib.h> //size_t 쓸 수 있음
 #include <assert.h>
 #include <unistd.h>
-#include <string.h>
+#include <string.h> //memcpy 정의되어 있음
 
 #include "mm.h"
 #include "memlib.h"
@@ -309,29 +309,61 @@ void *mm_realloc(void *bp, size_t size)
 {
     //bp는 payload의 시작 주소
     //이걸 수정해줘야 성능이 올라감
-    void *oldptr = bp;
+    //void *oldptr = bp;
+    //size_t copySize;
+
+
     void *newptr;
-    size_t copySize;
+    size_t asize; // 새로 요구하는 블록의 크기
+    size_t oldsize =GET_SIZE(HDRP(bp)) - DSIZE; //현재 payload의 크기
+    size_t csize; // 현재 블록 + 다음 블록 합친 전체 크기
+    size_t next_alloc = GET_ALLOC(HDRP(NEXT_BLKP(bp))); // 다음 할당
 
-    if(bp == NULL){
-      return mm_malloc(size);
-    }
+    if (size <= DSIZE)
+        asize = 2 * DSIZE;
+        //최소로 할당해줘야 하는 공간의 크기 ?
+    else
+       asize = DSIZE * ((size + (DSIZE) + (DSIZE-1)) / DSIZE);
 
-    if(size == 0){
-      mm_free(bp);
-      return NULL;
+    // 1. 현재 블록이 충분히 크면 그냥 그대로 사용
+    if (asize <= oldsize){
+      return bp;
     }
-    
-    newptr = mm_malloc(size);
-    if (newptr == NULL)
-      return NULL;
-    copySize = GET_SIZE(HDRP(oldptr)) -DSIZE;
-    //블록 크기 +할당 여부 섞여 있는 값
-    if (size < copySize)
-      copySize = size;
-    memcpy(newptr, oldptr, copySize);
-    mm_free(oldptr);
-    return newptr;
+    else{
+      //2. 다음 블록이 free 이고 , 합쳐서 필요한 크기 확보 가능하면(main)
+      if (!next_alloc && (oldsize + GET_SIZE(HDRP(NEXT_BLKP(bp)))) >= asize){
+        csize = oldsize + GET_SIZE(HDRP(NEXT_BLKP(bp)));
+        //csize는 현재 블록 + 다음 블록을 합친 전체 크기
+
+        PUT(HDRP(bp), PACK(csize + DSIZE, 1)); // 새롭게 헤더 주소 써주기
+        PUT(FTRP(bp), PACK(csize + DSIZE, 1)); // 새롭게 푸터 주소 써주기
+        return bp;
+      }
+      else{
+        // 3. 만약 확장이 불가능 하다면 새로 할당해서 복사 해주기
+        // 기존의 realloc 코드에 있던 로직과 비슷함
+        newptr = mm_malloc(size);
+        if (newptr == NULL)
+           return NULL;
+
+        memcpy(newptr,bp,oldsize);
+        mm_free(bp);
+        return newptr;
+      }
+    }
+/*
+    [memcpy]
+
+    -어떠한 메모리 영역의 값을 다른 메모리 영역으로
+     그대로 복사해주는 함수
+    -newptr : 복사해서 저장할 목적지 메모리 주소
+    -oldptr : 복사할 원본 메모리 주소
+    -copySize : 복사할 바이트 수
+
+    수정방안 : 이 memcpy없이 제자리에서 크기만 늘리는 방법으로 !
+
+    */
+
 }
 
 
