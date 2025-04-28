@@ -1,5 +1,6 @@
 #
 # Students' Makefile for the Malloc Lab
+# 컴파일 자동화 파일, make 명령어로 프로그램 빌드할 수 있게 설정
 #
 TEAM = bovik
 VERSION = 1

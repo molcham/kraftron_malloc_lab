@@ -1,5 +1,7 @@
 /****************************
  * High-level timing wrappers
+ * 
+ * 함수의 실행 시간을 초 단위로 측정하는 도구
  ****************************/
 #include <stdio.h>
 #include "fsecs.h"

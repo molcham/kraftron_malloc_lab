@@ -6,6 +6,9 @@
  *
  * Uses the cycle timer routines in clock.c to estimate the
  * the time in CPU cycles for a function f.
+ * 
+ * 함수의 실행 시간(사이클)을 정확하게 측정하는 라이브러리
+ *  
  */
 #include <stdlib.h>
 #include <sys/times.h>

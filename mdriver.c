@@ -6,6 +6,9 @@
  *
  * Copyright (c) 2002, R. Bryant and D. O'Hallaron, All rights reserved.
  * May not be used, modified, or copied without permission.
+ * 
+ * 메모리 할당기 성능/ 정확성을 테스트하는 드라이버 프로그램
+ * 
  */
 #include <stdio.h>
 #include <stdlib.h>

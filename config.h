@@ -3,7 +3,9 @@
 
 /*
  * config.h - malloc lab configuration file
- *
+ 
+ 설정 파일, 블록 크기 , 힙 크기 , 테스트 옵션 같은 매크로 정의
+
  * Copyright (c) 2002, R. Bryant and D. O'Hallaron, All rights reserved.
  * May not be used, modified, or copied without permission.
  */
@@ -61,6 +63,7 @@
  * Maximum heap size in bytes 
  */
 #define MAX_HEAP (20*(1<<20))  /* 20 MB */
+//최대 힙 크기
 
 /*****************************************************************************
  * Set exactly one of these USE_xxx constants to "1" to select a timing method

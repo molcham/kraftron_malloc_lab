@@ -7,6 +7,9 @@
  * Function timers that estimate the running time (in seconds) of a function f.
  *    ftimer_itimer: version that uses the interval timer
  *    ftimer_gettod: version that uses gettimeofday
+ * 
+ * 
+ * 시간 측정 도구 통합 관리, OS 레벨의 시간 함수 사용
  */
 #include <stdio.h>
 #include <sys/time.h>
